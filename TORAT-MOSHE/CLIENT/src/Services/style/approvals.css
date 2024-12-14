@@ -1,0 +1,21 @@
+.p-datatable .p-sortable-column .p-sortable-column-icon {
+    color: #c79807;
+    margin-left: 0.5rem;
+}
+.p-datatable .p-datatable-thead > tr > th {
+    text-align: left;
+    padding: 1rem 1rem;
+    border: 1px solid #dee2e6;
+    border-width: 0 0 1px 0;
+    font-weight: 700;
+    color: #c79807;
+    background: #f8f9fa;
+    transition: box-shadow 0.2s;
+}
+.p-datatable .p-sortable-column.p-highlight {
+    background: #EEF2FF;
+    color: #c79807;
+}
+.p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon {
+    color: #c79807;
+}

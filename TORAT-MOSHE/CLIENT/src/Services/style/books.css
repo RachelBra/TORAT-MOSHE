@@ -1,0 +1,15 @@
+.p-button {
+    color: #ffffff;
+    background: #c79807;
+    border: 1px solid #c79807;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    border-radius: 6px;
+  }
+  
+.p-selectbutton .p-button.p-highlight {
+    background: #c79807;
+    border-color: #c79807;
+    color: #ffffff;
+}

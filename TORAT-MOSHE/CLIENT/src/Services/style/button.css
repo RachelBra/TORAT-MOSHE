@@ -1,0 +1,3 @@
+.hovered-button:hover {
+    background-color: #64748b69;; /* Background color will be red when hovered */
+  }

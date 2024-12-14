@@ -1,0 +1,5 @@
+.p-button.p-button-secondary, .p-buttonset.p-button-secondary > .p-button, .p-splitbutton.p-button-secondary > .p-button, .p-fileupload-choose.p-button-secondary {
+  color: #ffffff;
+  background: #d09807;
+  border: 1px solid #d09807;
+}

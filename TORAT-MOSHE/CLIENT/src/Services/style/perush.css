@@ -1,0 +1,12 @@
+.p-fieldset .p-fieldset-legend {
+    padding: 1rem;
+    border: 1px solid #dee2e6;
+    color: #343a40;
+    background: #c798071f;
+    font-weight: 500;
+    border-radius: 10px;
+    padding-top: 0.75rem;
+    padding-right: 1.25rem;
+    padding-bottom: 0.75rem;
+    padding-left: 1.25rem;
+}
