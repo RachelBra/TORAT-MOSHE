@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChoosePath from './ChoosePathHanwiting'
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
@@ -16,22 +16,39 @@ export default function CustomUploadDemo(props) {
     const [navig, setNavig] = useState(null);
     const [level, setLevel] = useState(0);
     const [visible, setVisible] = useState(false);
-    const [path, setPath] = useState("💕");
+    const [path, setPath] = useState("");
+    const [tmpDescription, setTmpDescription] = useState("");
     const [description, setDescription] = useState("");
     const [flag, setFlag] = useState(true);
-    const [updateAttched, setUpdateAttched] = useState([]);
-const steps = ['בחירת קובץ', 'בחירת מיקום הקובץ', 'שם הקובץ', 'אישור ושמירה' ]
+    const [updateHWAttched, setUpdateHWAttched] = useState([]);
+    const [updateTrnsAttched, setUpdateTrnsAttched] = useState([]);
+
+    const steps = [' הוספת כתב יד','הוספת קובץ תמלול', 'בחירת מיקום הכתב', 'בחירת שם כתב היד', 'אישור ושמירה' ]
+
+    useEffect(() => {
+        if (updateHWAttched.length > 0) {
+            console.log("upload: ",updateHWAttched )
+            setLevel(1);
+        }
+    }, [updateHWAttched]);
+    
+    useEffect(() => {
+        if (updateTrnsAttched.length > 0) {
+            console.log("upload: ",updateTrnsAttched )
+            setLevel(2);
+        }
+    }, [updateTrnsAttched]);
 
     const addHandwriting = (x) => {
         console.log("😀", x);
         axios.post(`http://localhost:8000/handwritings`, x)
             .then(function (response) {
-                console.log(response);
-                setLevel(3)
+                console.log("כתב היד נוסף בהצלחה!", response.data);
+                setLevel(5); // נשנה את השלב בהתאם לתשובת השרת
             })
             .catch(function (error) {
-                console.log("😒", error);
-                setLevel(4)
+                console.error("❌ שגיאה בהעלאה:", error);
+                setLevel(6); // במצב של שגיאה נעבור לשלב אחר
             })
             .finally(function () {
             });
@@ -39,38 +56,11 @@ const steps = ['בחירת קובץ', 'בחירת מיקום הקובץ', 'שם 
 
     const footerContent = (
         <div>
-            <Button label="לא" icon="pi pi-times" onClick={() => { setLevel(1); setVisible(false) }} className="p-button-text" />
-            <Button label="כן" icon="pi pi-check" onClick={() => { setLevel(2); setVisible(false) }} autoFocus />
+            <Button label="לא" icon="pi pi-times" onClick={() => { setLevel(2); setVisible(false) }} className="p-button-text" />
+            <Button label="כן" icon="pi pi-check" onClick={() => { setLevel(3); setVisible(false) }} autoFocus />
         </div>
     );
-    const transcription =`פרשת ראה/ פרק י" א</br>
-    כ"ו: רשי מבאר את הפס וק בתיאור עובדת י של מעמד הברכות והקללות</br>
-    בהר גריזים ועיבל .</br>
-    הרמב"ם לעומתו מביא את הפסוק כהוכחה לבחירה בין טוב לרע כלומר</br>
-    שהרמב"ם ראה את המושגים ברכה וקללה כמקבילים למושגים טוב ורע .</br>
-    כ"ז: הברכה אשר תשמעו – הגדרת הברכה היא שתשמעו אל מצוות</br>
-    כלומר ברכה=ט ו ב</br>
-    כ"ח: והקללה אם לא תשמעו – הגדרת הקללה היא עונד, כלומר קללה =</br>
-    ר ע</br>
-    הרמב"ן לא סובר כרש"י )לא מתייחס למעמד הברכות והקללות( אלא</br>
-    משווה את הפסוק לראה נתתי לפניך... שהוא פסוק מובהק על בחירה בין</br>
-    טוב לרע ובכך הולך כמע ט כשם שמפרש הרמב"ם .</br>
-    דרך ברכה ודרך קללה – דרך שתוביל לשכר או לעונ</br>ש. הרמב"ן מדבר על
-    הבחירה בין טוב לרע וגם על תוצאות הבחי ר: בשכר </br>או בעונש. אצל
-    הרמב"ן טוב = ברכה. טוב = מוביל לברכה. לפיו באמת </br>המושגים ברכה
-    וקללה מקבילים לשכר ועונש .</br>
-    כ"ט: "ונתתה את הברכה על הר ג</br>ריזים ואת הקללה על הר עיבל – המילים
-    ברכה וקללה מיודעות ומכונות לברכה וקללה מסוימות – הפסוקים עוסקים</br>
-    במעמד הברכות והקללות תומכים בדעתו המוקדמת של רשי .</br>
-    פסוק זה לפי הרמב"ן מפורש שאכן הע ולם התנהל בדרך גמול של שכר</br>
-    ועונש כשם שמבואר בפסוקים הקודמים, ואילו פסוק זה שמהווה פעול ה</br>
-    מעשית מעיד לידיעה של המעמד )תמיד שכר ועונש (</br>
-    הרמב"ם שפרש ברכה וקללה כטוב ורע לא מיי שב שיטתו עם פסוק זה .</br>
-    נותן לפניכם – לפי רש"י: מובן שעומד למסור את נוסח הברכות והקללות</br>
-    לפניהם .</br>
-    לפי הרמב"ן: שתבחרו לכם מהן מה שתרצו. הכל צפוי והרשות נתונה של</br>
-    בחירה .
-    `
+ 
 
     // const customBase64Uploader = async (event) => {
     //     // convert file to base64 encoded
@@ -96,47 +86,67 @@ const steps = ['בחירת קובץ', 'בחירת מיקום הקובץ', 'שם 
 
                 {level == 0 &&
                     <div className="card flex justify-content-center flex-column flex align-items-center">
-                        <h1>לחץ לבחירת קובץ, הכתב יתומלל באופן אוטומטי לקובץ נפרד</h1>
+                        <h1>לחץ לבחירת קובץ כתב היד</h1>
                         {/* <FileUpload className="flex-column" mode="basic" name="demo[]" url="/api/upload" accept="image/*,application/pdf" customUpload uploadHandler={customBase64Uploader} /> */}
-                        <DropZone setUpdateAttched={setUpdateAttched}></DropZone>
-                        {updateAttched.length > 0 && updateAttched.map((item) => {
-                            setLevel(1);
-                        })}
-                    </div>}
+                        <DropZone setUpdateAttched={setUpdateHWAttched}></DropZone>
+                    </div>
+                }
                 {level == 1 &&
+                    <div className="card flex justify-content-center flex-column flex align-items-center">
+                        <h1>לחץ לבחירת קובץ תמלול</h1>
+                        <DropZone setUpdateAttched={setUpdateTrnsAttched}></DropZone>
+                    </div>
+                }
+                {level == 2 &&
                     <div className="card flex justify-content-center flex-column align-items-center">
                         <h1>בחר מיקום לשמירת כתב היד</h1>
-                        <ChoosePath userAuthorization={props.userAuthorization} setDescription={setDescription} setNavig={setNavig} setPath={setPath} setVisible={setVisible} />
-                    </div>}
-                {level == 2 &&
-                    <div className="card flex justify-content-center flex-column flex align-items-center">
-                        <h1 className='mx-6rem' >הוסף כותרת לכתב היד</h1><br></br>
-                        <InputText className='mx-6rem' value={description} onChange={(e) => { setDescription(e.target.value) }} />
-                        <Button label="אישור" onClick={() => { addHandwriting({ "image_path":updateAttched[0].fileName, "transcription": transcription, "description": description, "path_id": navig }) }} />
-                    </div>}
+                        <ChoosePath userAuthorization={props.userAuthorization} setNavig={setNavig} setDescription={setDescription} setPath={setPath} setVisible={setVisible} />                        
+                    </div>
+                }
                 {level == 3 &&
                     <div className="card flex justify-content-center flex-column flex align-items-center">
-                        <h2 className='mx-6rem' >כתב היד נוסף בהצלחה!</h2>
+                        <h1 className='mx-6rem' >הוסף כותרת לכתב היד</h1><br></br>
+                        {/* <InputText className='mx-6rem' value={description} onChange={(e) => { setDescription(e.target.value) }} /> */}
+                        <InputText className='mx-6rem' value={tmpDescription} onChange={(e) => { setTmpDescription(e.target.value) }} />
+                        <Button label="אישור" onClick={() => { setDescription(tmpDescription); setLevel(4); }} />
+                        {/* <Button label="להוספת כתב היד" onClick={() => { addHandwriting({ "image_path":updateHWAttched[0].fileName, "transcription": updateTrnsAttched[0].fileName, "description": description, "path_id": navig }) }} /> */}
+                    </div>
+                }
+                {level == 4 && (
+                    <div className="card flex justify-content-center flex-column flex align-items-center">
+                        <h2 className='mx-6rem'>{description}</h2>
+                        <Button 
+                            label="אישור הוספה למאגר"
+                            onClick={() => {
+                                addHandwriting({ "image_path":updateHWAttched[0].fileName, "transcription": updateTrnsAttched[0].fileName, "description": description, "path_id": navig })
+                                }
+                            }/>
+                    </div>
+                )}
+
+                {level == 5 && (
+                    <div className="card flex justify-content-center flex-column flex align-items-center">
+                        <h2 className='mx-6rem'>כתב היד נוסף בהצלחה!</h2>
                         <Tree level={level} flag={flag} setFlag={setFlag}></Tree>
 
-                        <h2 className='mx-6rem' >להוספת כתב יד נוסף לחץ על הכפתור</h2>
+                        <h2 className='mx-6rem'>להוספת כתב יד נוסף</h2>
                         <Button onClick={() => window.location.reload()} rounded icon={"pi pi-plus"}></Button>
-
-                    </div>}
-                    {level == 4 &&
+                    </div>
+                )}
+   
+                {level == 6 && (
                     <div className="card flex justify-content-center flex-column flex align-items-center">
-                        <h1 className='mx-6rem' >מתנצלים :|</h1>
-                        <h2 className='mx-6rem' >שגיאה בלתי צפוויה!!</h2>
-                        <Tree level={level} flag={flag} setFlag={setFlag}></Tree>
+                        <h1 className='mx-6rem'>❌ שגיאה בהוספת כתב היד</h1>
+                        <h3>אנא נסה שוב</h3>
 
-                        <h2 className='mx-6rem' >להוספת תקייה נוספת לחץ על הכפתור</h2>
-                        <Button onClick={() => window.location.reload()} rounded icon={"pi pi-plus"}></Button>
+                        <Button label="חזור לניסיון נוסף" onClick={() => {setNavig(""); setDescription(""); setTmpDescription(""); setUpdateHWAttched(""); setUpdateTrnsAttched(""); setLevel(0)}} />
+                    </div>
+                )}
 
-                    </div>}
-                    <div className="card flex justify-content-center flex-column flex align-items-center">
-                    <Dialog header="אישור הנתיב" visible={visible} style={{ width: '50vw' }} onHide={() => { setVisible(false) }} footer={footerContent}>
-                        <p className="m-0">{path}</p>
-                    </Dialog>
+                <div className="card flex justify-content-center flex-column flex align-items-center">
+                <Dialog header="אישור הנתיב" visible={visible} style={{ width: '50vw' }} onHide={() => { setVisible(false) }} footer={footerContent}>
+                    <p className="m-0">{path}</p>
+                </Dialog>
                 </div>
             </>
             :
