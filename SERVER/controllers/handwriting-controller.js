@@ -6,12 +6,86 @@ const Comment = db.comments;
 const User = db.users;
 const Correction = db.corrections;
 const Navigation = db.navigation;
-
-const base64toFile = require('node-base64-to-file');
 const path = require("path")
 const { v4: uuid } = require("uuid")
+const multer = require("multer");
+
+// 📂 תיקיות לשמירת קבצים
+const imagesFolder = path.join(__dirname, "..", "assets\\images");
+const transcriptionsFolder = path.join(__dirname, "..", "assets\\transcriptions");
+
+//  `multer` - הגדרת אחסון ושמות קבצים
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        console.log("In multer");
+        if (file.mimetype.startsWith("image/")) {
+            cb(null, imagesFolder); // שמירת תמונות ב-`images/`
+        } else {
+            cb(null, transcriptionsFolder); // שמירת קבצי טקסט ב-`transcriptions/`
+        }
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${uuid()}-${file.originalname}`); // שם ייחודי לכל קובץ
+    }
+});
+
+const upload = multer({ storage });
+
 
 class HandWritingController {
+    // saveBase64File = (base64Data, fileName, folderPath) => {
+    //     console.log("I am hear! 1");
+    //     const matches = base64Data.match(/^data:(.+);base64,(.+)$/);
+    //     if (!matches || matches.length !== 3) {
+    //         throw new Error("❌ פורמט Base64 לא תקין.");
+    //     }
+    
+    //     const fileType = matches[1]; // image/jpeg או text/plain
+    //     const fileExtension = fileType.split("/")[1]; // jpg, txt וכו'
+    //     const fileContent = Buffer.from(matches[2], "base64"); // המרה לבינארי
+    
+    //     const fullFileName = `${fileName}.${fileExtension}`;
+    //     const filePath = path.join(folderPath, fullFileName);
+    
+    //     fs.writeFileSync(filePath, fileContent);
+    //     console.log("I am hear! ", filePath);
+    
+    //     return filePath;
+    // };
+
+    addHandwriting = async(req, res) => {
+        try {
+            console.log("📥 קיבלנו בקשה:", req.files, req.body);
+
+            // וידוא שכל הנתונים התקבלו
+            if (!req.files || !req.files.handwriting || !req.files.transcription) {
+                return res.status(400).json({ error: "❌ יש להעלות גם תמונה וגם תמלול." });
+            }
+
+            const handwritingPath = "/images/" + req.files.handwriting[0].filename;
+            const transcriptionPath = "/transcriptions/" + req.files.transcription[0].filename;
+
+            const { description, path_id } = req.body;
+
+            if (!description || !path_id) {
+                return res.status(400).json({ error: "❌ חסרים פרמטרים (תיאור או מזהה נתיב)" });
+            }
+
+            // 📝 שמירת הנתונים במסד הנתונים
+            const newHandwriting = await Handwriting.create({
+                image_path: handwritingPath,
+                transcription: transcriptionPath,
+                description: description,
+                path_id: path_id
+            });
+
+            return res.status(201).json(newHandwriting);
+        } catch (error) {
+            console.error("❌ שגיאה בהעלאת הקובץ:", error);
+            return res.status(500).json({ error: "❌ שגיאה בשמירת הנתונים" });
+        }
+    }
+
     GetAll = async (req, res) => {
         var both = { tree: [], handwritings: [] };
         var obj = await Navigation.findAll();
@@ -85,28 +159,33 @@ class HandWritingController {
     //     return res.status(404).json({ message: 'error' })
     // }
 
-    addHandwriting = async (req, res) => {
+    addHandwritingOld = async (req, res) => {
+        console.log("I am hear! 1");
         // הירוקים הם בשביל להעלות תמונה כרגע רק כדי לבנות את הנתיב
-        let imagePath = ""
-        const folder = path.join(__dirname, "..", "images")
-        // const filename = `${uuid()}`
-        const filename = req.body.image_path;
-        // const fileUrl = `${folder}\\${filename}.png`
-        const fileUrl = `${folder}\\${filename}`
-        // const base64String = req.body.image_path;
+        const imagesFolder = path.join(__dirname, "..", "images")
+        const transcriptionsFolder = path.join(__dirname, "..", "transcriptions")
+        try {
+            const { handwriting, transcription, description, path_id } = req.body;
+            console.log(handwriting);
+            
+            if (!handwriting || !transcription || !description || !path_id) {
+                return res.status(400).json({ error: "❌ נתונים חסרים בבקשה" });
+            }
+    
+            // שמירת התמונה
+            const handwritingPath = saveBase64File(handwriting.file, handwriting.fileName, imagesFolder);
+            
+            // שמירת קובץ התמלול
+            const transcriptionPath = saveBase64File(transcription.file, transcription.fileName, transcriptionsFolder);
+            const status = await Handwriting.create({ image_path: handwritingPath, transcription: transcriptionPath, description: description, path_id: path_id });
 
-        // try {
-        //     imagePath = await base64toFile(base64String, { filePath: folder, fileName: filename, types: ['png'], fileMaxSize: 3145728 });
-        // }
-        // catch (error) {
-        //     return res.status(400).json({ message: 'error occured while loading image' })
-        // }
-
-        const obj = await Handwriting.create({ image_path: fileUrl, transcription: req.body.transcription, description: req.body.description, path_id: req.body.path_id });
-        console.log("fileUrl", obj);
-        if (obj)
-            return res.status(201).json(obj)
-        return res.status(507).json({ message: "not succcess" })
+            if (status)
+                return res.status(201).json(obj)         
+            return res.status(500).json({ error: " שגיאה בשמירת הנתונים" });
+        } catch (error) {
+            console.error("❌ שגיאה בהעלאת הקובץ:", error);
+            return res.status(500).json({ error: "❌ שגיאה בשמירת הקובץ" });
+        }
     }
 
     addPeirush = async (req, res) => {
@@ -240,4 +319,4 @@ class HandWritingController {
 }
 
 const handWritingController = new HandWritingController();
-module.exports = handWritingController;
+module.exports = { handWritingController, upload };

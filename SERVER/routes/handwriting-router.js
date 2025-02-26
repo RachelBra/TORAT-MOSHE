@@ -1,11 +1,11 @@
 const express = require("express");
-const handwritingController = require("../controllers/handwriting-controller");
+const { handWritingController: handwritingController, upload } = require("../controllers/handwriting-controller");
 const handwritingRouter = express.Router();
 
 
 handwritingRouter.route("/")
     .get(handwritingController.GetAll)
-    .post(handwritingController.addHandwriting)
+    .post(upload.fields([{ name: "handwriting" }, { name: "transcription" }]), handwritingController.addHandwriting)
     .delete(handwritingController.deleteHandwrting)
 // handwritingRouter.route("/folder/:id")
 //     .get(handwritingController.getHandwritingsDesByFolderId)

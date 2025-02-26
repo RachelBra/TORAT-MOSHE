@@ -1,159 +1,103 @@
-import React, { useState, useEffect } from 'react';
-import ChoosePath from './ChoosePathHanwiting'
-import { Button } from 'primereact/button';
-import { Dialog } from 'primereact/dialog';
-import { InputText } from "primereact/inputtext";
-import axios from 'axios';
-import 'primeflex/primeflex.css';
-// import AddingSteps from './AddingSteps';
-import AddingSteps from './AddinfStepsGeneric';
-import Tree from '../Tree';
-import '../../App.css';
-import DropZone from './UploadHandwriting';
-import { FileUpload } from 'primereact/fileupload';
+import React, { useState } from "react";
+import axios from "axios";
+import { FileUpload } from "primereact/fileupload";
+//import AddingSteps from './AddinfStepsGeneric';
 
-export default function CustomUploadDemo(props) {
-    const [navig, setNavig] = useState(null);
-    const [level, setLevel] = useState(0);
-    const [visible, setVisible] = useState(false);
-    const [path, setPath] = useState("");
-    const [tmpDescription, setTmpDescription] = useState("");
+
+function UploadHandwriting() {
+    const [handwritingFile, setHandwritingFile] = useState(null);
+    const [transcriptionFile, setTranscriptionFile] = useState(null);
     const [description, setDescription] = useState("");
-    const [flag, setFlag] = useState(true);
-    const [updateHWAttched, setUpdateHWAttched] = useState([]);
-    const [updateTrnsAttched, setUpdateTrnsAttched] = useState([]);
+    const [pathId, setPathId] = useState("");
+    const [message, setMessage] = useState("");
 
-    const steps = [' הוספת כתב יד','הוספת קובץ תמלול', 'בחירת מיקום הכתב', 'בחירת שם כתב היד', 'אישור ושמירה' ]
+    //const steps = [' הוספת כתב יד','הוספת קובץ תמלול', 'בחירת מיקום הכתב', 'בחירת שם כתב היד', 'אישור ושמירה' ]
 
-    useEffect(() => {
-        if (updateHWAttched.length > 0) {
-            console.log("upload: ",updateHWAttched )
-            setLevel(1);
+
+    // שמירת קובץ כתב היד שנבחר
+    const handleHandwritingSelect = (event) => {
+        if (event.files.length > 0) {
+            setHandwritingFile(event.files[0]); // שמירה ב-state
         }
-    }, [updateHWAttched]);
-    
-    useEffect(() => {
-        if (updateTrnsAttched.length > 0) {
-            console.log("upload: ",updateTrnsAttched )
-            setLevel(2);
-        }
-    }, [updateTrnsAttched]);
+    };
 
-    const addHandwriting = (x) => {
-        console.log("😀", x);
-        axios.post(`http://localhost:8000/handwritings`, x)
-            .then(function (response) {
-                console.log("כתב היד נוסף בהצלחה!", response.data);
-                setLevel(5); // נשנה את השלב בהתאם לתשובת השרת
-            })
-            .catch(function (error) {
-                console.error("❌ שגיאה בהעלאה:", error);
-                setLevel(6); // במצב של שגיאה נעבור לשלב אחר
-            })
-            .finally(function () {
+    // שמירת קובץ התמלול שנבחר
+    const handleTranscriptionSelect = (event) => {
+        if (event.files.length > 0) {
+            setTranscriptionFile(event.files[0]); // שמירה ב-state
+        }
+    };
+
+    // שליחת כל הנתונים לשרת
+    const handleFinalUpload = async () => {
+        if (!handwritingFile || !transcriptionFile || !description || !pathId) {
+            setMessage("❌ יש למלא את כל השדות לפני השליחה.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("handwriting", handwritingFile);
+        formData.append("transcription", transcriptionFile);
+        formData.append("description", description);
+        formData.append("path_id", pathId);
+
+        try {
+            const response = await axios.post("http://localhost:8000/handwritings", formData, {
+                headers: { "Content-Type": "multipart/form-data" }
             });
-    }
 
-    const footerContent = (
-        <div>
-            <Button label="לא" icon="pi pi-times" onClick={() => { setLevel(2); setVisible(false) }} className="p-button-text" />
-            <Button label="כן" icon="pi pi-check" onClick={() => { setLevel(3); setVisible(false) }} autoFocus />
-        </div>
-    );
- 
-
-    // const customBase64Uploader = async (event) => {
-    //     // convert file to base64 encoded
-    //     const file = event.files[0];
-    //     const reader = new FileReader();
-    //     let blob = await fetch(file.objectURL).then((r) => r.blob()); //blob:url
-
-    //     reader.readAsDataURL(blob);
-
-    //     reader.onloadend = function () {
-    //         //pdf
-    //         setBase64data(reader.result);
-    //         console.log("PPPPPPPPPPPPP", reader.result);
-    //         setLevel(1);
-    //     };
-    // };
-/////////////////
+            console.log("✅ קובץ נשמר בהצלחה:", response.data);
+            setMessage(`✅ קובץ נשמר בהצלחה: ${response.data.message}`);
+        } catch (error) {
+            console.error("❌ שגיאה בהעלאה:", error);
+            setMessage("❌ שגיאה בהעלאת הקובץ, נסה שוב.");
+        }
+    };
 
     return (
-        props.userAuthorization == 2 ?
-            <>
-                <AddingSteps steps = {steps} level={level}></AddingSteps>
+        <div>
+            {/* שלב 1 - בחירת תמונה */}
+            <h3>📂 בחר תמונה של כתב יד</h3>
+            <FileUpload
+                name="handwriting"
+                customUpload
+                uploadHandler={() => {}} // מונע שליחה אוטומטית
+                onSelect={handleHandwritingSelect} // שומר את הקובץ ב-state
+                accept="image/*"
+                maxFileSize={5000000}
+                chooseLabel="בחר תמונה"
+                auto={false} // ביטול העלאה אוטומטית
+                mode="basic" // מונע הצגת כפתורי Upload ו-Cancel
+            />
+            {handwritingFile && <p>📸 קובץ תמונה נבחר: {handwritingFile.name}</p>}
 
-                {level == 0 &&
-                    <div className="card flex justify-content-center flex-column flex align-items-center">
-                        <h1>לחץ לבחירת קובץ כתב היד</h1>
-                        {/* <FileUpload className="flex-column" mode="basic" name="demo[]" url="/api/upload" accept="image/*,application/pdf" customUpload uploadHandler={customBase64Uploader} /> */}
-                        <DropZone setUpdateAttched={setUpdateHWAttched}></DropZone>
-                    </div>
-                }
-                {level == 1 &&
-                    <div className="card flex justify-content-center flex-column flex align-items-center">
-                        <h1>לחץ לבחירת קובץ תמלול</h1>
-                        <DropZone setUpdateAttched={setUpdateTrnsAttched}></DropZone>
-                    </div>
-                }
-                {level == 2 &&
-                    <div className="card flex justify-content-center flex-column align-items-center">
-                        <h1>בחר מיקום לשמירת כתב היד</h1>
-                        <ChoosePath userAuthorization={props.userAuthorization} setNavig={setNavig} setDescription={setDescription} setPath={setPath} setVisible={setVisible} />                        
-                    </div>
-                }
-                {level == 3 &&
-                    <div className="card flex justify-content-center flex-column flex align-items-center">
-                        <h1 className='mx-6rem' >הוסף כותרת לכתב היד</h1><br></br>
-                        {/* <InputText className='mx-6rem' value={description} onChange={(e) => { setDescription(e.target.value) }} /> */}
-                        <InputText className='mx-6rem' value={tmpDescription} onChange={(e) => { setTmpDescription(e.target.value) }} />
-                        <Button label="אישור" onClick={() => { setDescription(tmpDescription); setLevel(4); }} />
-                        {/* <Button label="להוספת כתב היד" onClick={() => { addHandwriting({ "image_path":updateHWAttched[0].fileName, "transcription": updateTrnsAttched[0].fileName, "description": description, "path_id": navig }) }} /> */}
-                    </div>
-                }
-                {level == 4 && (
-                    <div className="card flex justify-content-center flex-column flex align-items-center">
-                        <h2 className='mx-6rem'>{description}</h2>
-                        <Button 
-                            label="אישור הוספה למאגר"
-                            onClick={() => {
-                                addHandwriting({ "image_path":updateHWAttched[0].fileName, "transcription": updateTrnsAttched[0].fileName, "description": description, "path_id": navig })
-                                }
-                            }/>
-                    </div>
-                )}
+            {/* שלב 2 - בחירת קובץ תמלול */}
+            <h3>📜 בחר קובץ תמלול</h3>
+            <FileUpload
+                name="transcription"
+                customUpload
+                uploadHandler={() => {}} // מונע שליחה אוטומטית
+                onSelect={handleTranscriptionSelect} // שומר את הקובץ ב-state
+                accept="text/plain"
+                maxFileSize={5000000}
+                chooseLabel="בחר קובץ תמלול"
+                auto={false} // ביטול העלאה אוטומטית
+                mode="basic" // מונע הצגת כפתורי Upload ו-Cancel
+            />
+            {transcriptionFile && <p>📄 קובץ תמלול נבחר: {transcriptionFile.name}</p>}
 
-                {level == 5 && (
-                    <div className="card flex justify-content-center flex-column flex align-items-center">
-                        <h2 className='mx-6rem'>כתב היד נוסף בהצלחה!</h2>
-                        <Tree level={level} flag={flag} setFlag={setFlag}></Tree>
+            {/* שלב 3 - הכנסת מידע נוסף */}
+            <h3>📝 תיאור כתב היד</h3>
+            <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
 
-                        <h2 className='mx-6rem'>להוספת כתב יד נוסף</h2>
-                        <Button onClick={() => window.location.reload()} rounded icon={"pi pi-plus"}></Button>
-                    </div>
-                )}
-   
-                {level == 6 && (
-                    <div className="card flex justify-content-center flex-column flex align-items-center">
-                        <h1 className='mx-6rem'>❌ שגיאה בהוספת כתב היד</h1>
-                        <h3>אנא נסה שוב</h3>
+            <h3>📂 מיקום שמירת כתב היד</h3>
+            <input type="text" value={pathId} onChange={(e) => setPathId(e.target.value)} />
 
-                        <Button label="חזור לניסיון נוסף" onClick={() => {setNavig(""); setDescription(""); setTmpDescription(""); setUpdateHWAttched(""); setUpdateTrnsAttched(""); setLevel(0)}} />
-                    </div>
-                )}
-
-                <div className="card flex justify-content-center flex-column flex align-items-center">
-                <Dialog header="אישור הנתיב" visible={visible} style={{ width: '50vw' }} onHide={() => { setVisible(false) }} footer={footerContent}>
-                    <p className="m-0">{path}</p>
-                </Dialog>
-                </div>
-            </>
-            :
-            <>
-                <h1>פדיחה! 🤨🤔😵</h1>
-                <h3>לא ברור איך הגעת לכאן לכאן אבל-- </h3>
-                <b>אין לך הרשאת גישה לעמוד זה.</b>
-            </>
-    )
+            {/* כפתור לשליחת כל הנתונים לשרת */}
+            <button onClick={handleFinalUpload}>📤 אישור הוספה למאגר</button>
+            {message && <p>{message}</p>}
+        </div>
+    );
 }
+
+export default UploadHandwriting;
