@@ -95,7 +95,7 @@ export const orderPeirush = (data = [])=>{
 
 export const showPath =(y, arrtree)=>{
     var x = arrtree.find(element => element.id == y)
-    var path =""+x.label;
+    var path ="";
     while(x){
         x = arrtree.find(element => element.id == x.parent_id)
         if (x) 
