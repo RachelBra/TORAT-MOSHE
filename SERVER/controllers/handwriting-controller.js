@@ -10,7 +10,7 @@ const path = require("path")
 const { v4: uuid } = require("uuid")
 const multer = require("multer");
 
-// 📂 תיקיות לשמירת קבצים
+// תיקיות לשמירת קבצים
 const imagesFolder = path.join(__dirname, "..", "assets\\images");
 const transcriptionsFolder = path.join(__dirname, "..", "assets\\transcriptions");
 
@@ -33,25 +33,6 @@ const upload = multer({ storage });
 
 
 class HandWritingController {
-    // saveBase64File = (base64Data, fileName, folderPath) => {
-    //     console.log("I am hear! 1");
-    //     const matches = base64Data.match(/^data:(.+);base64,(.+)$/);
-    //     if (!matches || matches.length !== 3) {
-    //         throw new Error("❌ פורמט Base64 לא תקין.");
-    //     }
-    
-    //     const fileType = matches[1]; // image/jpeg או text/plain
-    //     const fileExtension = fileType.split("/")[1]; // jpg, txt וכו'
-    //     const fileContent = Buffer.from(matches[2], "base64"); // המרה לבינארי
-    
-    //     const fullFileName = `${fileName}.${fileExtension}`;
-    //     const filePath = path.join(folderPath, fullFileName);
-    
-    //     fs.writeFileSync(filePath, fileContent);
-    //     console.log("I am hear! ", filePath);
-    
-    //     return filePath;
-    // };
 
     addHandwriting = async(req, res) => {
         try {
@@ -62,8 +43,8 @@ class HandWritingController {
                 return res.status(400).json({ error: "❌ יש להעלות גם תמונה וגם תמלול." });
             }
 
-            const handwritingPath = "/images/" + req.files.handwriting[0].filename;
-            const transcriptionPath = "/transcriptions/" + req.files.transcription[0].filename;
+            const handwritingPath = req.files.handwriting[0].filename;
+            const transcriptionPath = fs.readFileSync(path.join(__dirname, "..", "assets\\transcriptions", req.files.transcription[0].filename), "utf-8");
 
             const { description, path_id } = req.body;
 
@@ -104,7 +85,8 @@ class HandWritingController {
         const obj = await Handwriting.findOne({ where: { id: req.params.id} , attributes: [ "image_path","transcription",'description'] });
         if (obj) { 
             const hanwriting =  {
-                                    image_path: fs.readFileSync(obj.image_path, { encoding: 'base64' }),
+                                    image_path: fs.readFileSync(path.join(__dirname, "..", "assets\\images", obj.image_path), { encoding: 'base64' }),
+                                    // transcription: fs.readFileSync(path.join(__dirname, "..", "assets\\transcriptions", obj.transcription), "utf-8"),
                                     transcription: obj.transcription,
                                     description:obj.description
                                 }
