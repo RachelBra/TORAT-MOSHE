@@ -14,11 +14,11 @@
   "dependencies": {
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.4.7",
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.0",
-    "mysql2": "^3.1.2",
+    "mysql2": "^3.12.0",
     "node-base64-to-file": "^1.0.4",
     "nodemailer": "^6.9.1",
     "sequelize": "^6.28.0"

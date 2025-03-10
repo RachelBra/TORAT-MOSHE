@@ -36,7 +36,7 @@ const ManagerToolbar = (props) => {
         { label: 'ניהול משתמשים', command: () => navigate("UsersDetails"), icon: <i className="pi pi-users  ml-2 mr-2 text-yellow-600" style={{ fontSize: '1rem', color: 'orange' }}></i> },
     ];
 
-    const start = <img alt="logo" src="https://primefaces.org/cdn/primereact/images/logo.png" height="40" className="mr-2"></img>;
+    const start = <img alt="logo" src="/favicon.png" height="120" className="mr-2"></img>;
     const end = <div className="flex flex-column  justify-content-start flex-wrap p-0 m-0 sm:mr-0 mr-3 "><Button  className='2rem mx-2 ' icon={<i className="pi pi-user text-yellow-600" style={{ fontSize: '1rem'}}></i>} rounded text raised severity="warning" onClick={(e) => menu.current.toggle(true)} /><h5 className='m-0 p-0 mx-2 text-yellow-600'>מנהל</h5></div>
 
     return (

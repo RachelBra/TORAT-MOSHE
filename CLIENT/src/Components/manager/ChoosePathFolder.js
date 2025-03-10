@@ -31,7 +31,7 @@ export default function FilterDemo(props) {
         getFoldersAndFiles();
     }, [])
 
-        const onSelectionChange = (e) => {
+    const onSelectionChange = (e) => {
         const selectedNodeKey = e.node.key; // Accessing the key from e.node
         const updatedNodes = toggleNodeExpansion([...nodes], selectedNodeKey);
         setNodes(updatedNodes);
