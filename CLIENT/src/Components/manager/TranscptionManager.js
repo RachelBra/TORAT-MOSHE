@@ -136,7 +136,7 @@ function Transcption(props) {
 
             {open && <ListBox onClick={(e) => { setVisible(true) }} onChange={(e) => { setId(e.value.code); e.value.original_word == "-" ? setFlagIgnore(true) : setFlagIgnore(false) }} options={corr} optionLabel="name" />}
 
-            <Dialog header="אישור הנתיב" visible={visible} style={{ width: '40vw', direction: 'rtl' }} onHide={() => setVisible(false)} footer={footerContent}>
+            <Dialog header="אישור התיקון" visible={visible} style={{ width: '40vw', direction: 'rtl' }} onHide={() => setVisible(false)} footer={footerContent}>
                 <p className="m-1">בלחיצה על אישור הקובץ יתעדכן, </p>
                 <p className="m-1">וכל שאר ההצעות על המילה הזו ימחקו. </p>
                 {flagIgnore ?

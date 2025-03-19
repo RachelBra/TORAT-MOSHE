@@ -44,7 +44,7 @@ const Toolbar = (props) => {
         tmp = <div className="flex flex-column  justify-content-start flex-wrap p-0 m-0 sm:mr-0 mr-3  "><Button className=' mx-2 ' icon={<i className="pi pi-user text-yellow-600" style={{ fontSize: '1rem' }}></i>} rounded text raised  onClick={() => navigate("LogIn")} /><h6 className='m-0 p-0 mx-2 text-yellow-600'>התחברות</h6></div>
 
 
-    const start = <img alt="logo" src="https://primefaces.org/cdn/primereact/images/logo.png" height="40" className="mr-2"></img>;
+    const start = <img alt="logo" src="/favicon.png" height="120" className="mr-2"></img>;
     const end = tmp;
 
     return (

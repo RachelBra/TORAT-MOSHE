@@ -123,8 +123,6 @@ export default function Treee(props) {
                         selectionMode="single"
                         // nodeTemplate = {customNodeTemplate}
                     />
-                    <div>https://primereact.org/speeddial/</div>
-                    <div>https://primereact.org/tabview/</div>
 
                 </div>
             )}
