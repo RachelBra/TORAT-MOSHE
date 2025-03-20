@@ -2,46 +2,6 @@ import './App.css';
 //theme
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 
-// primereact/resources/themes/bootstrap4-light-blue/theme.css
-// primereact/resources/themes/bootstrap4-light-purple/theme.css
-// primereact/resources/themes/bootstrap4-dark-blue/theme.css
-// primereact/resources/themes/bootstrap4-dark-purple/theme.css
-// primereact/resources/themes/md-light-indigo/theme.css
-// primereact/resources/themes/md-light-deeppurple/theme.css
-// primereact/resources/themes/md-dark-indigo/theme.css
-// primereact/resources/themes/md-dark-deeppurple/theme.css
-// primereact/resources/themes/mdc-light-indigo/theme.css
-// primereact/resources/themes/mdc-light-deeppurple/theme.css
-// primereact/resources/themes/mdc-dark-indigo/theme.css
-// primereact/resources/themes/mdc-dark-deeppurple/theme.css
-// primereact/resources/themes/tailwind-light/theme.css
-// primereact/resources/themes/fluent-light/theme.css
-// primereact/resources/themes/lara-light-blue/theme.css
-// primereact/resources/themes/lara-light-indigo/theme.css
-// primereact/resources/themes/lara-light-purple/theme.css
-// primereact/resources/themes/lara-light-teal/theme.css
-// primereat/resources/themes/viva-light/theme.css
-// primereact/resources/themes/viva-dark/theme.css
-// primereact/resources/themes/mira/theme.css
-// primereact/resources/themes/nano/theme.css
-// primereact/resources/themes/saga-blue/theme.css
-// primereact/resources/themes/saga-green/theme.css
-// primereact/resources/themes/saga-orange/theme.css
-// primereact/resources/themes/saga-purple/theme.css
-// primereact/resources/themes/vela-blue/theme.css
-// primereact/resources/themes/vela-green/theme.css
-// primereact/resources/themes/vela-orange/theme.css
-// primereact/resources/themes/vela-purple/theme.css
-// primereact/resources/themes/arya-blue/theme.css
-// primereact/resources/themes/arya-green/theme.css
-// primereact/resources/themes/arya-orange/theme.css
-// primereact/resources/themes/arya-purple/theme.cssct/resources/themes/lara-dark-blue/theme.css
-// primereact/resources/themes/lara-dark-indigo/theme.css
-// primereact/resources/themes/lara-dark-purple/theme.css
-// primereact/resources/themes/lara-dark-teal/theme.css
-// primereact/resources/themes/soho-light/theme.css
-// primereact/resources/themes/soho-dark/theme.css
-
 //core
 import "primereact/resources/primereact.min.css";
 //icons
@@ -78,7 +38,7 @@ import DeleteFolder from './Components/manager/DeleteFolder';
 import AddBook from './Components/manager/AddBook';
 import ChangeTree from './Components/manager/ChangeTree';
 // import Transcption from './Components/showHandwriting/Transcption';
-
+import Yehoshua_Leib_Diskin from './assets/imges/ImageGen.png'
 
 
 function App() {
@@ -103,13 +63,14 @@ function App() {
     setUserAuthorization(parsedUser.authorization)
   }, [])
 
-  const containerStyle = {
-    backgroundImage: `url("https://mikispitzer.com/wp-content/uploads/2021/03/K27A862%D7%930-Edit1.jpg")`,
-    // backgroundSize: 'cover', // Adjust this property to fit your needs
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    width: '98vw',
-    height: '95vh'
+const containerStyle = {
+  backgroundImage: `url(${Yehoshua_Leib_Diskin})`,
+  backgroundSize: 'cover',  // תמונה תכסה את כל הרקע
+  backgroundPosition: 'center', // תמונה במרכז
+  backgroundRepeat: 'no-repeat', // תמונה לא תחזור
+  width: '100vw',  // רוחב כל המסך
+  height: '100vh',  // גובה כל המסך
+  minHeight: '100vh'  // לפחות גובה מסך שלם
 };
 
   return (
