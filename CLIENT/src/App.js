@@ -12,7 +12,7 @@ import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css';
 
 import Home from './Components/Home';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import LogIn from './Components/logIn/LogIn';
 import Register from './Components/logIn/Register';
 import Contact from './Components/Contact';
@@ -38,8 +38,64 @@ import DeleteFolder from './Components/manager/DeleteFolder';
 import AddBook from './Components/manager/AddBook';
 import ChangeTree from './Components/manager/ChangeTree';
 // import Transcption from './Components/showHandwriting/Transcption';
-import Yehoshua_Leib_Diskin from './assets/imges/ImageGen.png'
+import backgroundHome from './assets/imges/backgroundHomeToratMoshe.png'
+import background from './assets/imges/backgroundToratMoshe.png'
 
+// Create a separate component for the routes that can use hooks
+function AppRoutes({ userId, userAuthorization, userEmail, setUserIdCallback, help, setHelp }) {
+  const location = useLocation();
+
+  const backgroundImage = location.pathname === '/' 
+    ? `url(${backgroundHome})` 
+    : `url(${background})`;
+
+  const containerStyle = {
+    backgroundImage,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    width: '100vw',
+    height: '100vh',
+    minHeight: '100vh'
+  };
+
+  return (
+    <div style={containerStyle}>
+      {userId === '' ? 
+        <header><Toolbar set={setUserIdCallback} setHelp={setHelp}></Toolbar></header> : 
+        userAuthorization <= 1 ? 
+          <header><Toolbar set={setUserIdCallback} setHelp={setHelp} ></Toolbar></header> : 
+          <header><ManagerToolbar set={setUserIdCallback} setHelp={setHelp}></ManagerToolbar></header>
+      }
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/LogIn' element={<LogIn set={setUserIdCallback} />} />
+        <Route path='/Register' element={<Register />} />
+        <Route path='/Contact' element={<Contact userId={userId} />} />
+        <Route path='/Tree' element={<Tree help={help} />} />
+        <Route path='/Tree/Handwriting/:id' element={<Handwriting />} />
+        <Route path='/AddHandwriting/Handwriting/:id' element={<Handwriting />} />
+        <Route path='/Books' element={<Books />} />
+        <Route path='/RePassword1' element={<RePassword1 set={setUserIdCallback} />} />
+        <Route path='/RePassword2' element={<RePassword2 userEmail={userEmail} />} />
+        <Route path='/RePassword3' element={<RePassword3 userEmail={userEmail} />} />
+        <Route path='/UsersDetails' element={<UsersDetails userAuthorization={userAuthorization} />} />
+        <Route path='/Approvals/:flag' element={<Approvals userAuthorization={userAuthorization} />} />
+        <Route path='/ChangeTree' element={<ChangeTree userAuthorization={userAuthorization} />} />
+        <Route path='/HandwritingManagerCorrection/:id' element={<HandwritingManagerCorrection userAuthorization={userAuthorization} />} />
+        <Route path='/HandwritingManagerPeirushim/:id' element={<HandwritingManagerPeirushim userAuthorization={userAuthorization} />} />
+        <Route path='/UsersDetails/EmailToUser/:id' element={<EmailToUser userAuthorization={userAuthorization} />} />
+        <Route path='/EmailToAllUsers/:id' element={<EmailToAllUsers userAuthorization={userAuthorization} />} />
+        <Route path='/AddHandwriting' element={<AddHandwriting userAuthorization={userAuthorization} />} />
+        <Route path='/AddFolder' element={<AddFolder userAuthorization={userAuthorization} />} />
+        <Route path='/AddBook' element={<AddBook userAuthorization={userAuthorization} />} />
+        <Route path='/DeleteFolder' element={<DeleteFolder userAuthorization={userAuthorization} />} />
+        <Route path='/AddHandwriting/Handwriting/:id/:corrections' element={<Handwriting />} />
+        <Route path='*' element={<h1> 404 Page not found <br></br>  ולמרות הכל- תני חיוך😁😂</h1>} />
+      </Routes>
+    </div>
+  );
+}
 
 function App() {
   const [userId, setUserId] = useState('');
@@ -51,7 +107,6 @@ function App() {
     setUserId(id);
     setUserAuthorization(authorization)
     setUserEmail(email)
-
   }
 
   useEffect(() => {
@@ -63,54 +118,19 @@ function App() {
     setUserAuthorization(parsedUser.authorization)
   }, [])
 
-const containerStyle = {
-  backgroundImage: `url(${Yehoshua_Leib_Diskin})`,
-  backgroundSize: 'cover',  // תמונה תכסה את כל הרקע
-  backgroundPosition: 'center', // תמונה במרכז
-  backgroundRepeat: 'no-repeat', // תמונה לא תחזור
-  width: '100vw',  // רוחב כל המסך
-  height: '100vh',  // גובה כל המסך
-  minHeight: '100vh'  // לפחות גובה מסך שלם
-};
-
   return (
-    <>
-      <div style={containerStyle}>
-        <UserProvider userId={userId} userAuthorization={userAuthorization}>
-
-          <Router>
-            {userId == '' ? <header><Toolbar set={setUserIdCallback} setHelp={setHelp}></Toolbar></header> : userAuthorization <= 1 ? <header><Toolbar set={setUserIdCallback} setHelp={setHelp} ></Toolbar></header> : <header><ManagerToolbar set={setUserIdCallback} setHelp={setHelp}></ManagerToolbar></header>}
-            <Routes>
-              <Route path='/' element={<Home />} />
-              <Route path='/LogIn' element={<LogIn set={setUserIdCallback} />} />
-              <Route path='/Register' element={<Register />} />
-              <Route path='/Contact' element={<Contact userId={userId} />} />
-              <Route path='/Tree' element={<Tree help={help} />} />
-              <Route path='/Tree/Handwriting/:id' element={<Handwriting />} />
-              <Route path='/AddHandwriting/Handwriting/:id' element={<Handwriting />} />
-              <Route path='/Books' element={<Books />} />
-              <Route path='/RePassword1' element={<RePassword1 set={setUserIdCallback} />} />
-              <Route path='/RePassword2' element={<RePassword2 userEmail={userEmail} />} />
-              <Route path='/RePassword3' element={<RePassword3 userEmail={userEmail} />} />
-              <Route path='/UsersDetails' element={<UsersDetails userAuthorization={userAuthorization} />} />
-              <Route path='/Approvals/:flag' element={<Approvals userAuthorization={userAuthorization} />} />
-              <Route path='/ChangeTree' element={<ChangeTree userAuthorization={userAuthorization} />} />
-              <Route path='/HandwritingManagerCorrection/:id' element={<HandwritingManagerCorrection userAuthorization={userAuthorization} />} />
-              <Route path='/HandwritingManagerPeirushim/:id' element={<HandwritingManagerPeirushim userAuthorization={userAuthorization} />} />
-              <Route path='/UsersDetails/EmailToUser/:id' element={<EmailToUser userAuthorization={userAuthorization} />} />
-              <Route path='/EmailToAllUsers/:id' element={<EmailToAllUsers userAuthorization={userAuthorization} />} />
-              <Route path='/AddHandwriting' element={<AddHandwriting userAuthorization={userAuthorization} />} />
-              <Route path='/AddFolder' element={<AddFolder userAuthorization={userAuthorization} />} />
-              <Route path='/AddBook' element={<AddBook userAuthorization={userAuthorization} />} />
-              <Route path='/DeleteFolder' element={<DeleteFolder userAuthorization={userAuthorization} />} />
-              <Route path='/AddHandwriting/Handwriting/:id/:corrections' element={<Handwriting />} />
-
-              <Route path='*' element={<h1> 404 Page not found <br></br>  ולמרות הכל- תני חיוך😁😂</h1>} />
-            </Routes>
-          </Router>
-        </UserProvider>
-      </div>
-    </>
+    <UserProvider userId={userId} userAuthorization={userAuthorization}>
+      <Router>
+        <AppRoutes 
+          userId={userId} 
+          userAuthorization={userAuthorization} 
+          userEmail={userEmail} 
+          setUserIdCallback={setUserIdCallback}
+          help={help}
+          setHelp={setHelp}
+        />
+      </Router>
+    </UserProvider>
   );
 }
 
